@@ -1,0 +1,65 @@
+#all lines of code are executed in jupyter notebook
+
+!pip install kaggle
+!kaggle datasets download -d kazanova/sentiment140
+
+from zipfile import ZipFile
+dataset=r"your_path to the downloaded file"
+with ZipFile(dataset,'r') as zip:
+    zip.extractall()
+import numpy as np
+import pandas as pd
+import re
+import pickle
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+import nltk
+nltk.download('stopwords')
+
+path=r"your path to csv file"
+col_names=['target','id','date','flag','user','text',]
+twitter_data=pd.read_csv(path,names=col_names,encoding='ISO-8859-1')
+
+twitter_data.head()
+twitter_data.isnull().sum()
+twitter_data['target'].value_counts()
+twitter_data.replace({'target':{4:1}},inplace=True)
+
+port_stem=PorterStemmer()
+def stemming(content):
+    stem_content=re.sub('[^a-zA-z]',' ',content)
+    stem_content=stem_content.lower()
+    stem_content=stem_content.split()
+    stem_content=[port_stem.stem(word) for word in stem_content if not word in stopwords.words('english')]
+    stem_content="".join(stem_content)
+    return stem_content
+
+twitter_data['stemmed_content']=twitter_data['text'].apply(stemming) # this step can take up to 50 min 
+
+X=twitter_data['stemmed_content'].values
+Y=twitter_data['target'].values
+
+x_train,x_test,y_train,y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=2)
+vectorizer=TfidfVectorizer()
+x_train=vectorizer.fit_transform(x_train)
+x_test=vectorizer.transform(x_test)
+
+model=LogisticRegression(max_iter=1000)
+model.fit(x_train,y_train)
+
+
+file_name="semantic_model.sav"
+pickle.dump(model,open(file_name,'wb'))
+pickle.dump(vectorizer,open('vectorizer','wb'))
+
+loaded_model=pickle.load(open("path to the saved model",'rb'))
+predictions=model.predict(x_test[200]) #testing on 1 sample
+if predictions==1:
+    print('positive')
+else:
+    print('negative')
