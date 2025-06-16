@@ -9,7 +9,7 @@ load_dotenv()
 
 # Path to your service account key file you downloaded
 # Make sure this path is correct!
-cred = credentials.Certificate("firebase_admin_config.json")
+cred = credentials.Certificate(firebase_admin_config)
 
 # Initialize the app with the service account, and specify your database URL
 firebase_admin.initialize_app(cred, {
