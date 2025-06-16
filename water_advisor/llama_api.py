@@ -7,14 +7,14 @@ from dotenv import load_dotenv
 def query_llama(prompt):
     url = "https://api.together.xyz/v1/chat/completions"
     headers = {
-        "Authorization": f"Bearer {TOGETHER_API_KEY}",
+        "Authorization": f"Bearer {st.secrets["TOGETHER_API_KEY"]}",
         "Content-Type": "application/json"
     }
 
     payload = {
         "model": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free",
         "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 200,
+        "max_tokens": 300,
         "temperature": 0.7
     }
 
