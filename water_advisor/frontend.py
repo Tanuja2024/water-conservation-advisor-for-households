@@ -15,6 +15,7 @@ from visualize import (
 )
 load_dotenv()
 from render import render_grouped_bar_chart,render_single_bar_chart
+THRESHOLD_PER_PERSON = 350 #average water usage limit per person
 
 if "basic_info" not in st.session_state:
     st.session_state.basic_info = {}
@@ -77,8 +78,7 @@ if menu == "Submit Household Data":
             
             st.success(f"✅ Data saved successfully!\n\nClient ID: {client_id}\n\nSave this Client ID for your future login")
            
-            # Example threshold per person (can be customized)
-            THRESHOLD_PER_PERSON = 350  # litres per day
+           
 
             # Total usage for the day
             total_usage = sum(detail_data.values())
@@ -88,6 +88,7 @@ if menu == "Submit Household Data":
 
             # Calculate allowed limit
             threshold = THRESHOLD_PER_PERSON * members
+            st.session_state.threshold=threshold
 
             if total_usage > threshold:
                 st.warning(f"🚨 Alert: Your usage of {total_usage} litres exceeds the allowed limit of {threshold} litres.")
@@ -202,11 +203,15 @@ elif menu == "View Stored Data":
                 for year, months in usage.items():
                     for month, days in months.items():
                         for day, resources in days.items():
+                            total_usage = sum(resources.values())
+                            water_saved = st.session_state.threshold - total_usage
                             for resource, amount in resources.items():
                                 rows.append({
                                     "Date": f"{year}-{month}-{day}",
                                     "Resource": resource,
                                     "Litres Used": amount
+                                    "Total Daily Usage": total_usage,
+                                    "Water Saved": max(0, water_saved) 
                                         })
 
                 # Convert to DataFrame
