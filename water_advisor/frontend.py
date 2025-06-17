@@ -209,7 +209,7 @@ elif menu == "View Stored Data":
                                 rows.append({
                                     "Date": f"{year}-{month}-{day}",
                                     "Resource": resource,
-                                    "Litres Used": amount
+                                    "Litres Used": amount,
                                     "Total Daily Usage": total_usage,
                                     "Water Saved": max(0, water_saved) 
                                         })
