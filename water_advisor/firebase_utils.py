@@ -10,12 +10,13 @@ load_dotenv()
 
 # Path to your service account key file you downloaded
 # Make sure this path is correct!
-cred = credentials.Certificate(dict(st.secrets["firebase"]))
+if not firebase_admin._apps:
+    cred = credentials.Certificate(dict(st.secrets["firebase"]))
 
 # Initialize the app with the service account, and specify your database URL
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://chat-bot-1db9a-default-rtdb.firebaseio.com'
-})
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://chat-bot-1db9a-default-rtdb.firebaseio.com'
+    })
 
 print("Firebase Admin SDK initialized successfully!")
 
